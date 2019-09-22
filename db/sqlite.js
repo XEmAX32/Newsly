@@ -2,6 +2,7 @@ import { SQLite } from 'expo-sqlite';
 import store from '../redux/store';
 import ActionCreators from '../redux/actions';
 import { name, version } from './config';
+import * as Crypto from 'expo-crypto';
 
 var db;
 const debug = true;
@@ -28,35 +29,21 @@ function successCallback(callback = null) {
 function openDB() {
     console.log('opening db')
     db = SQLite.openDatabase(name,version);
-    const state = store.getState();
-    //console.log('state',state)
-    db.transaction(tx => {
-//       tx.executeSql('DROP TABLE options')
-        tx.executeSql('CREATE TABLE IF NOT EXISTS articles(id TEXT PRIMARY KEY NOT NULL, title TEXT, author TEXT, content TEXT, url TEXT, websiteName TEXT, urlToImage TEXT);', [], successCallback, errorCallback);
-        tx.executeSql('CREATE TABLE IF NOT EXISTS options(country_name TEXT, country_flag TEXT, night_mode INTEGER);', [], successCallback, errorCallback);
-        tx.executeSql('SELECT * FROM options;', [], (_, { rows: { _array } }) => {
 
-            store.dispatch(ActionCreators.setCategory({ flag: _array.country_flag, country: _array.country_name }))
-        }, errorCallback);
+    db.transaction(tx => {
+//       tx.executeSql('DROP TABLE articles')
+        tx.executeSql('CREATE TABLE IF NOT EXISTS articles(id TEXT PRIMARY KEY NOT NULL, title TEXT, author TEXT, content TEXT, url TEXT, websiteName TEXT, urlToImage TEXT, publishedAt TEXT);', [], successCallback, errorCallback);
+        tx.executeSql('CREATE TABLE IF NOT EXISTS options(country_name TEXT, country_flag TEXT, night_mode INTEGER);', [], successCallback, errorCallback);
     }, errorCallback, successCallback);
 }
 
 function closeDB() {
-    console.log('closing db')
-    db.transaction(tx => {
-        const options = store.getState().optionsReducers;
-        //console.log('closedb',options.country.name, options.country.flag, Number(options.nightmode))
-        tx.executeSql('DELETE FROM options;');
-        tx.executeSql('INSERT INTO options (country_name, country_flag, night_mode) VALUES (?,?,?);', [options.country.name, options.country.flag, Number(options.nightmode)], successCallback, errorCallback);
-       //tx.executeSql('INSERT INTO articles (id, title, author, content, url, websiteName, urlToImage) VALUES (?, ?, ?, ?, ?, ?, ?);', [id, title, author, content, url, websiteName, urlToImage], successCallback, errorCallback);
-
-    }, errorCallback, successCallback)
-    /*
+    
     if(db) {
         db.close(successCallback, errorCallback);
     } else {
         errorCallback('Database not existing');
-    }*/
+    }
 
 }
 
@@ -69,12 +56,21 @@ function closeDB() {
  * @param {string} websiteName 
  * @param {string} imageLink 
  */
-function saveArticle(id, title, author, content, url, websiteName, urlToImage) {
+async function saveArticle(title, author, content, url, websiteName, urlToImage, publishedAt) {
+    const id = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        url
+    );
 
     db.transaction(tx => {
 //        tx.executeSql('INSERT INTO articles (title, author, content, url, websiteName, urlToImage) VALUES ("ciao", "ciao", "ciao", "ciao", "ciao", "ciao");', [], successCallback, (err) => console.log('exec',err));
-        
-        tx.executeSql('INSERT INTO articles (id, title, author, content, url, websiteName, urlToImage) VALUES (?, ?, ?, ?, ?, ?, ?);', [id, title, author, content, url, websiteName, urlToImage], successCallback, errorCallback);
+        tx.executeSql('SELECT * FROM articles WHERE id=?;', [id], (_, { rows: { _array } }) => {
+            if(_array.length > 0)
+                tx.executeSql('DELETE FROM articles WHERE id=?', [id], successCallback, errorCallback);
+            else
+                tx.executeSql('INSERT INTO articles (id, title, author, content, url, websiteName, urlToImage, publishedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', [id, title, author, content, url, websiteName, urlToImage, publishedAt], successCallback, errorCallback);
+
+        }, errorCallback);
     }, errorCallback, successCallback);
 }
 
@@ -104,10 +100,30 @@ function getArticles(callback) {
     
 }
 
+async function isSaved(url) {
+    const id = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        url
+    );
+
+    return new Promise((resolve, reject) => db.transaction(tx => {
+        tx.executeSql('SELECT * FROM articles WHERE id=?;', [id], (_, { rows: { _array } }) => {
+            if(_array.length > 0)
+                resolve(true)
+            else 
+                resolve(false)
+        }, () => {
+            errorCallback(); 
+            reject()
+        });
+    }, errorCallback, successCallback));
+}
+
 export { 
     openDB,
     closeDB,
     saveArticle,
     removeArticle,
+    isSaved,
     getArticles
 }

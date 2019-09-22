@@ -7,9 +7,9 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
-import Dash from 'react-native-dash';
+import Layout from '../constants/Layout';
 
-const { height, width } = Dimensions.get('window');
+const { width, height } = Layout.window;
 
 export default function Article({author, title, image, onPressCallback}) {
     return (
@@ -21,13 +21,6 @@ export default function Article({author, title, image, onPressCallback}) {
                     <Text style={styles.author}>{author}</Text>
                 </View>
             </TouchableOpacity>
-            <View style={{alignItems:'center'}}>
-                <Dash 
-                    style={styles.dash}
-                    dashColor="#eceded"
-                    dashThickness={1.5}
-                />
-            </View>
         </Fragment>
     );
 }
@@ -51,9 +44,4 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         padding: 15
     },
-    dash: {
-        width:width/1.2, 
-        height:1,
-        marginVertical: 20
-    }
 })

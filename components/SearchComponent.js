@@ -13,13 +13,20 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ActionCreators } from '../redux';
 
-function SearchComponent({searchNews, style}) {
+function SearchComponent({searchNews, style, getNews}) {
+
+    const search = (query) => {
+        if(query.length > 0)
+            searchNews(query)
+        else 
+            getNews('general')
+    }
 
     return (
         <View style={[styles.container, style]}>
             <TextInput 
                 style={styles.textInput} 
-                onChange={(e) => {searchNews(e.nativeEvent.text)}}
+                onChange={(e) => search(e.nativeEvent.text)}
                 placeholder="Search news..."
             />
             <Feather
@@ -49,7 +56,8 @@ const styles = StyleSheet.create({
     textInput: {
         flex:1,
         backgroundColor: '#fff',
-        paddingLeft: 20
+        paddingLeft: 20,
+        width: '100%'
     },
 })
 

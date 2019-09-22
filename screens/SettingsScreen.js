@@ -15,11 +15,12 @@ import emojiFlags from 'emoji-flags';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ActionCreators } from '../redux';
+import Layout from '../constants/Layout';
 
-const { width } = Dimensions.get('window')
+const { width } = Layout.window;
+
 
 function SettingsScreen({navigation, setCountry, country}) {
-
  
   hideMenu = () => {
     this._menu.hide();
@@ -32,7 +33,7 @@ function SettingsScreen({navigation, setCountry, country}) {
   const _keyExtractor = (item, index) => ''+index;
 
   const _renderItem = ({item}) => (
-    <MenuItem onPress={(data, emoji = item.emoji, name = item.name) => {hideMenu();setCountry({flag: emoji, name})}} key={item.unicode}>{item.emoji+""+item.name}</MenuItem>  
+    <MenuItem onPress={(data, emoji = item.emoji, name = item.name, code = item.code) => {hideMenu();setCountry({flag: emoji, name, code})}} key={item.unicode}>{item.emoji+""+item.name}</MenuItem>  
   );
 
   return (

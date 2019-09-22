@@ -1,10 +1,10 @@
 import * as types from '../actions/types';
+import categories from '../../constants/categories'
 
 const { 
     GET_NEWS,
     SET_CATEGORY,
     SEARCH_NEWS,
-    SET_COUNTRY,
     SET_NIGHTMODE
 } = types;
 
@@ -13,13 +13,10 @@ const {
 const initialState = {
     generalReducers: {
         news:{},
+        category: categories[0].keyword
     },
     optionsReducers: {
-        country: {
-            name: 'Italy',
-            flag: '🇮🇹'
-        },
-        nightmode: false
+        nightmode: false,
     }
 }
 
@@ -41,13 +38,6 @@ const generalReducers = function (state = initialState.generalReducers, action) 
 
 const optionsReducers = function (state = initialState.optionsReducers, action) {
     switch(action.type) {
-        case SET_COUNTRY:
-                console.log('newstate', Object.assign({}, state, {
-                    country: action.country
-                }))
-            return Object.assign({}, state, {
-                country: action.country
-            })
         case SET_NIGHTMODE:
             return Object.assign({}, state, {
                 nightmode: action.nightmode

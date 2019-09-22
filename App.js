@@ -3,11 +3,12 @@ import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState, useEffect } from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { Provider } from 'react-redux'
 import { store } from './redux'
 
+import { AppearanceProvider } from 'react-native-appearance';
 import AppNavigator from './navigation/AppNavigator';
 
 import { openDB, closeDB } from './db/sqlite';
@@ -54,10 +55,10 @@ export default class App extends React.Component {
   }
 
   render() {
-    if(this.state.loading)
+    if(this.state.loading == false)
       openDB();
 
-    if (!this.state.loading && !this.props.skipLoadingScreen) {
+    if (this.state.loading == true) {
       return (
         <AppLoading
           startAsync={loadResourcesAsync}
@@ -67,12 +68,14 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <Provider store={store}>
-          <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <AppNavigator />
-          </View>
-        </Provider>
+        <AppearanceProvider>
+          <Provider store={store}>
+            <View style={styles.container}>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+              <AppNavigator />
+            </View>
+          </Provider>
+        </AppearanceProvider>
       );
     }
   }
@@ -82,13 +85,16 @@ export default class App extends React.Component {
 async function loadResourcesAsync() {
   await Promise.all([
     Asset.loadAsync([
-      //require("./assets/illustrations/enterteinment.png"),
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
+      require("./assets/illustrations/general.png"),
+      require("./assets/illustrations/business.png"),
+      require("./assets/illustrations/enterteinment.png"),
+      require("./assets/illustrations/science.png"),
+      require("./assets/illustrations/sport.png"),
+      require("./assets/illustrations/technology.png"),
+      require("./assets/illustrations/health.png"),
     ]),
     Font.loadAsync({
       // This is the font that we are using for our tab bar
-      ...Ionicons.font,
       // We include SpaceMono because we use it in HomeScreen.js. Feel free to
       // remove this if you are not using it in your app
       'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),

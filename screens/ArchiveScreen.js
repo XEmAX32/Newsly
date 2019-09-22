@@ -10,17 +10,20 @@ import {
 import Article from '../components/Article';
 import { getArticles } from '../db/sqlite';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
+import Layout from '../constants/Layout';
+import ItemSeparator from '../components/ItemSeparator';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Layout.window;
 
 export default function ArchiveScreen({navigation}) {
-  const [news, setNews] = useState([]);
-
+  //const [news, setNews] = useState([]);
   useEffect(() => {
+    console.log(navigation)
     getArticles((results) => {
       setNews(results)
     });
-  }, []);
+  });
 
   const _renderItem = ({item}) => (
     <Article title={item.title} image={item.urlToImage} onPressCallback={() => navigation.navigate('Article', { item: {saved: true, source:{name: item.websiteName}, ...item}})} />
@@ -47,8 +50,10 @@ export default function ArchiveScreen({navigation}) {
 
       {news && <FlatList
         data={news}
+        extraData={news.length}
         keyExtractor={_keyExtractor}
         renderItem={_renderItem}
+        ItemSeparatorComponent={ItemSeparator}
       />}
     </View>
   );
@@ -60,7 +65,7 @@ ArchiveScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#fecd45',
+    backgroundColor: Colors.yellow,
     height: 150,
     width: width,
     padding:20,

@@ -12,72 +12,93 @@ import CategoryView from '../components/CategoryView';
 import SearchComponent from '../components/SearchComponent';
 import Article from '../components/Article';
 import { Ionicons } from '@expo/vector-icons';
-
+import Menu, { MenuItem } from 'react-native-material-menu';
+import emojiFlags from 'emoji-flags';
+import colors from '../constants/Colors';
+import ItemSeparator from '../components/ItemSeparator';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ActionCreators } from '../redux';
 
-import categories from '../data/categories'
+import categories from '../constants/categories'
+import Layout from '../constants/Layout';
 
-const {height,width} = Dimensions.get('window');
+const { width } = Layout.window;
 
-function HomeScreen({news, getNews, navigation}) {
-
-
+function HomeScreen({news, getNews, navigation, category, setCategory}) {
+  const [country, setCountry] = useState({
+    name: 'Italy',
+    flag: '🇮🇹',
+    code: 'IT',
+})
+  
   useEffect(() => {
-    getNews('general')
-  }, [])
-
-  const [category, setCategory] = useState(categories[0].keyword);
-
-  const refreshPage = (keyword) => {
-    setCategory(keyword);
-  };
+    getNews(category, country.code)
+  }, [country.code, category])
 
   const _keyExtractor = (item, index) => ''+index;
 
   const _renderItem = ({item}) => (
-    <Article author={item.author} title={item.title} image={item.urlToImage} onPressCallback={() => navigation.navigate('Article', {item: {...item, saved:false}})} />
+    <Article author={item.author} title={item.title} image={item.urlToImage} onPressCallback={() => navigation.navigate('Article', {item: {...item, saved:false, category }})} />
+  );
+
+  const hideMenu = () => {
+    this._menu.hide();
+  };
+ 
+  const showMenu = () => {
+    this._menu.show();
+  };
+  
+  const _renderLanguageOption = ({item}) => (
+    <MenuItem onPress={(data, emoji = item.emoji, name = item.name, code = item.code) => {hideMenu();setCountry({flag: emoji, name, code})}} key={item.unicode}>{item.emoji+""+item.name}</MenuItem>  
   );
 
   return(
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerbarContainer}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Archive')}
-            >
-              <Ionicons
-                name={'md-bookmark'}
-                size={30}
-              />
-            </TouchableOpacity>
-            <Text>Today's news</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Settings')}
-            >
-              <Ionicons
-                name={'ios-settings'}
-                size={30}
-              />
-            </TouchableOpacity>
+          <Menu
+            ref={ref => {
+              this._menu = ref;
+            }}
+            animationDuration={100}
+            button={<Text style={{fontSize:30}} onPress={showMenu}>{country.flag}</Text>}
+          >
+            <FlatList 
+              style={{height: 200}} 
+              data={emojiFlags.data}
+              keyExtractor={_keyExtractor}
+              renderItem={_renderLanguageOption}
+            />
+          </Menu>
+          <Text style={styles.title}>Today's news</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Archive')}
+          >
+            <Ionicons
+              name={'md-bookmark'}
+              size={30}
+            />
+          </TouchableOpacity>
         </View>
         <SearchComponent style={styles.searchComponent} />
       </View>
-      <View>
+      <View style={styles.content}>
         <ScrollView
-            style={styles.scrollView}
-            horizontal
-            contentContainerStyle={styles.scrollViewContent}
-            showsHorizontalScrollIndicator={false}
-          >
-            {categories.map((category, i) => <CategoryView key={i} illustration={category.illustration} name={category.name} onPress={() => refreshPage(category.keyword)}/>)}
+          style={styles.scrollView}
+          horizontal
+          contentContainerStyle={styles.scrollViewContent}
+          showsHorizontalScrollIndicator={false}
+        >
+          {categories.map((el, i) => <CategoryView key={i} illustration={el.illustration} name={el.name} onPress={() => setCategory(el.keyword)}/>)}
         </ScrollView>
         {news.articles !== undefined ? <FlatList
           data={news.articles}
           keyExtractor={_keyExtractor}
           renderItem={_renderItem}
           contentContainerStyle={styles.flatList}
+          ItemSeparatorComponent={ItemSeparator}
         /> : null}
       </View>
     </View>
@@ -104,7 +125,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   header: {
-    backgroundColor: '#fecd45',
+    backgroundColor: colors.yellow,
     height: 150,
     width: width,
     padding:20,
@@ -113,20 +134,28 @@ const styles = StyleSheet.create({
   },
   headerbarContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   searchComponent: {
     top: 40
   },
   flatList: {
-    paddingTop: 50,
-    zIndex: -1
+    paddingBottom: 450
+  },
+  content: {
+    marginTop: 30
+  },
+  title: {
+    fontWeight: '500'
   }
 });
 
 const mapStateToProps = (state) => {
   return {
-    news: state.generalReducers.news
+    news: state.generalReducers.news,
+    country: state.optionsReducers.country,
+    category: state.generalReducers.category
   }
 }
 

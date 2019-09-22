@@ -8,17 +8,21 @@ import {
     Dimensions,
     TouchableOpacity
 } from 'react-native';
+import Colors from '../constants/Colors';
+import Layout from '../constants/Layout';
 
-const { width } = Dimensions.get('window');
+const { width } = Layout.window;
 
-export default function CategoryView({name,illustration}){
+export default function CategoryView({name,illustration, onPress}){
     return (
         <TouchableOpacity
+            onPress={onPress}
         >
             <View 
                 style={styles.container}
             >   
-                <Image height={2} width={2} style={{transform: [{scale: .7}]}} source={illustration} />
+                <Image style={styles.image} source={illustration} />
+                <Text style={styles.text}>{name}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -30,14 +34,20 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         borderRadius: 15,
         width: width/1.5,
+        justifyContent:'flex-end',
         height: width/3,
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
-        backgroundColor: '#fecd45',
-        marginRight: 30,
+        backgroundColor: Colors.yellow,
+        marginRight: 50,
     },
     text: {
-        marginBottom: 10,
-        marginRight: 10
+        color: Colors.blue,
+        fontSize: 15,
+        fontWeight: 'bold',
+        paddingLeft: 10,
+        paddingBottom: 10
+    },
+    image: {
+        alignSelf: 'flex-end',
+        transform: [{scale: 1}],
     }
 })
