@@ -1,15 +1,11 @@
 import React from 'react';
 
 import { 
-    View,
     Text,
-    Image,
     StyleSheet,
-    Dimensions,
     TouchableOpacity
 } from 'react-native';
-import Colors from '../constants/Colors';
-import Layout from '../constants/Layout';
+import { Colors, Layout, Fonts } from '../constants/Theme';
 
 const { width } = Layout.window;
 
@@ -17,19 +13,22 @@ export default function CategoryView({name,illustration, onPress}){
     return (
         <TouchableOpacity
             onPress={onPress}
+            style={styles.touchable}
         >
-            <View 
-                style={styles.container}
-            >   
-                <Image style={styles.image} source={illustration} />
-                <Text style={styles.text}>{name}</Text>
-            </View>
+            <Text style={styles.text}>{name}</Text>
         </TouchableOpacity>
     );
 };
-//                <Text style={styles.text}>{name}</Text>
 
 const styles = StyleSheet.create({
+    touchable: {
+        backgroundColor: Colors.yellow,
+        marginRight: 20,
+        alignItems: 'center',
+        padding: 10,
+        justifyContent: 'center',
+        borderRadius: 10
+    },
     container: {
         flexDirection: 'column',
         borderRadius: 15,
@@ -40,11 +39,9 @@ const styles = StyleSheet.create({
         marginRight: 50,
     },
     text: {
-        color: Colors.blue,
+        color: '#000',
         fontSize: 15,
-        fontWeight: 'bold',
-        paddingLeft: 10,
-        paddingBottom: 10
+        fontFamily: Fonts.medium
     },
     image: {
         alignSelf: 'flex-end',

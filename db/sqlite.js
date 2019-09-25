@@ -27,12 +27,11 @@ function successCallback(callback = null) {
 }
 
 function openDB() {
-    console.log('opening db')
     db = SQLite.openDatabase(name,version);
 
     db.transaction(tx => {
-//       tx.executeSql('DROP TABLE articles')
-        tx.executeSql('CREATE TABLE IF NOT EXISTS articles(id TEXT PRIMARY KEY NOT NULL, title TEXT, author TEXT, content TEXT, url TEXT, websiteName TEXT, urlToImage TEXT, publishedAt TEXT);', [], successCallback, errorCallback);
+//        tx.executeSql('DROP TABLE articles')
+        tx.executeSql('CREATE TABLE IF NOT EXISTS articles(id TEXT PRIMARY KEY NOT NULL, title TEXT, author TEXT, content TEXT, url TEXT, websiteName TEXT, urlToImage TEXT, publishedAt TEXT, category TEXT);', [], successCallback, errorCallback);
         tx.executeSql('CREATE TABLE IF NOT EXISTS options(country_name TEXT, country_flag TEXT, night_mode INTEGER);', [], successCallback, errorCallback);
     }, errorCallback, successCallback);
 }
@@ -56,7 +55,7 @@ function closeDB() {
  * @param {string} websiteName 
  * @param {string} imageLink 
  */
-async function saveArticle(title, author, content, url, websiteName, urlToImage, publishedAt) {
+async function saveArticle(description, title, author, content, url, websiteName, urlToImage, publishedAt, category) {
     const id = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
         url
@@ -68,7 +67,7 @@ async function saveArticle(title, author, content, url, websiteName, urlToImage,
             if(_array.length > 0)
                 tx.executeSql('DELETE FROM articles WHERE id=?', [id], successCallback, errorCallback);
             else
-                tx.executeSql('INSERT INTO articles (id, title, author, content, url, websiteName, urlToImage, publishedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', [id, title, author, content, url, websiteName, urlToImage, publishedAt], successCallback, errorCallback);
+                tx.executeSql('INSERT INTO articles (id, title, author, content, url, websiteName, urlToImage, publishedAt, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', [id, title, author, content, url, websiteName, urlToImage, publishedAt, category], successCallback, errorCallback);
 
         }, errorCallback);
     }, errorCallback, successCallback);

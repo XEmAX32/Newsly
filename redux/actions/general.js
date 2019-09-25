@@ -4,17 +4,19 @@ import axios from 'axios';
 const key = '2e6b9900b30140e59173218adc843249';
 var cancelSearch;
 
-//sort: key:value (value asc/desc)
-function getNews(category, country) {
+function getNews(category, country, refreshWorker) {
+    refreshWorker(true)
     return function(dispatch) {
         return fetch('https://newsapi.org/v2/top-headlines?country='+country+'&category='+category+'&sortBy=publishedAt&apiKey='+key, {
             method: 'GET',
         }).then((response) => {
             response.json().then(res => {
+                refreshWorker(false)
                 dispatch({
                     type: types.GET_NEWS,
                     news: res
-                })
+                });
+
             });
         });
     }
@@ -35,7 +37,7 @@ function searchNews(query) {
     cancelSearch = axios.CancelToken.source()
 
     return function(dispatch) {
-        return axios.get('https://newsapi.org/v2/everything?q='+query+'&sortBy=publishedAt&excludeDomains="Stackoverflow.com"&apiKey='+key, {cancelToken: cancelSearch.token})
+        return axios.get('https://newsapi.org/v2/everything?q='+query+'&sortBy=relevancy&apiKey='+key, {cancelToken: cancelSearch.token})
         .then((response) => {
             dispatch({
                 type: types.GET_NEWS,

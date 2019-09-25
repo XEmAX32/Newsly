@@ -7,21 +7,29 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
-import Layout from '../constants/Layout';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Layout, Fonts, Colors } from '../constants/Theme';
+import timeSince from '../utils/timeSince';
 
-const { width, height } = Layout.window;
+const { width } = Layout.window;
 
-export default function Article({author, title, image, onPressCallback}) {
+export default function Article({publishedAt, author, title, image, onPressCallback}) {        
     return (
-        <Fragment>
-            <TouchableOpacity style={styles.container} onPress={onPressCallback}>
-                <Image style={styles.image} source={{uri: image}}/>
-                <View style={styles.centralContainer}>
-                    <Text numberOfLines={2} style={styles.title} ellipsizeMode="tail">{title}</Text>
-                    <Text style={styles.author}>{author}</Text>
+        <TouchableOpacity style={styles.container} onPress={onPressCallback}>
+            <Image style={styles.image} source={{uri: image}}/>
+            <View style={styles.centralContainer}>
+                <Text numberOfLines={2} style={styles.title} ellipsizeMode="tail">{title}</Text>
+                {author != null && <Text style={styles.author}>{author}</Text>}
+                <View style={styles.timeSinceContainer}>
+                    <MaterialCommunityIcons 
+                        name={'clock-outline'}
+                        size={20}
+                        color={Colors.grey}
+                    />
+                    <Text style={styles.timeSince}>{timeSince(new Date(publishedAt))+' ago'}</Text>
                 </View>
-            </TouchableOpacity>
-        </Fragment>
+            </View>
+        </TouchableOpacity>
     );
 }
 
@@ -38,10 +46,22 @@ const styles = StyleSheet.create({
     },
     title: {
         width: width/1.5,
-        fontWeight: 'bold'
+        fontFamily: Fonts.medium
     },
     centralContainer: {
-        flexDirection: 'column',
-        padding: 15
+        paddingHorizontal: 15,
+        justifyContent: 'flex-start'
     },
+    author: {
+        fontFamily: Fonts.regular
+    },
+    timeSince: {
+        marginLeft: 10, 
+        color: Colors.grey
+    },
+    timeSinceContainer: {
+        marginVertical: 10, 
+        flexDirection: 'row', 
+        alignItems: 'center'
+    }
 })

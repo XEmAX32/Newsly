@@ -85,26 +85,24 @@ export default class App extends React.Component {
 async function loadResourcesAsync() {
   await Promise.all([
     Asset.loadAsync([
-      require("./assets/illustrations/general.png"),
+      /*require("./assets/illustrations/general.png"),
       require("./assets/illustrations/business.png"),
       require("./assets/illustrations/enterteinment.png"),
       require("./assets/illustrations/science.png"),
       require("./assets/illustrations/sport.png"),
       require("./assets/illustrations/technology.png"),
-      require("./assets/illustrations/health.png"),
+      require("./assets/illustrations/health.png"),*/
+      require('./assets/illustrations/listEmpty.png')
     ]),
     Font.loadAsync({
-      // This is the font that we are using for our tab bar
-      // We include SpaceMono because we use it in HomeScreen.js. Feel free to
-      // remove this if you are not using it in your app
-      'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+      'rubik-bold': require('./assets/fonts/Rubik-Bold.ttf'),
+      'rubik-regular': require('./assets/fonts/Rubik-Regular.ttf'),
+      'rubik-medium': require('./assets/fonts/Rubik-Medium.ttf'),
     }),
   ]);
 }
 
 function handleLoadingError(error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
   console.warn(error);
 }
 

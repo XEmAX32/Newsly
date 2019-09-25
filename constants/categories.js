@@ -1,7 +1,7 @@
 const data = [
   {
     "illustration": require("../assets/illustrations/general.png"),
-    "name": "Tutto",
+    "name": "General",
     "keyword": "general"
   },
   {
@@ -11,12 +11,12 @@ const data = [
   },
   {
     "illustration": require("../assets/illustrations/enterteinment.png"),
-    "name": "Intrattenimento",
+    "name": "Entertainment",
     "keyword": "entertainment"
   },
   {
     "illustration": require("../assets/illustrations/science.png"),
-    "name": "Scienza",
+    "name": "Science",
     "keyword": "science"
   },
   {
@@ -26,12 +26,12 @@ const data = [
   },
   {
     "illustration": require("../assets/illustrations/technology.png"),
-    "name": "Tecnologia",
+    "name": "Technology",
     "keyword": "technology"
   },
   {
     "illustration": require("../assets/illustrations/health.png"),
-    "name": "Salute",
+    "name": "Health",
     "keyword": "health"
   }
 ]
